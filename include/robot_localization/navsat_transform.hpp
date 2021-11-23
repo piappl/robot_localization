@@ -35,8 +35,10 @@
 
 #include <robot_localization/srv/set_datum.hpp>
 #include <robot_localization/srv/to_ll.hpp>
+#include <robot_localization/srv/to_ll_array.hpp>
 #include <robot_localization/srv/from_ll.hpp>
 #include <robot_localization/srv/from_ll_array.hpp>
+#include <geographic_msgs/msg/geo_point.hpp>
 
 #include <Eigen/Dense>
 #include <GeographicLib/Geocentric.hpp>
@@ -93,6 +95,12 @@ private:
   bool toLLCallback(
     const std::shared_ptr<robot_localization::srv::ToLL::Request> request,
     std::shared_ptr<robot_localization::srv::ToLL::Response> response);
+
+  //! @brief Callback for the to Lat Long service
+  //!
+  bool toLLArrayCallback(
+    const std::shared_ptr<robot_localization::srv::ToLLArray::Request> request,
+    std::shared_ptr<robot_localization::srv::ToLLArray::Response> response);
 
   //! @brief Callback for the from Lat Long service
   //!
@@ -212,6 +220,11 @@ private:
    * @brief Service for to Lat Long
    */
   rclcpp::Service<robot_localization::srv::ToLL>::SharedPtr to_ll_srv_;
+
+  /**
+   * @brief Service for to Lat Long
+   */
+  rclcpp::Service<robot_localization::srv::ToLLArray>::SharedPtr to_ll_array_srv_;
 
   /**
    * @brief Service for from Lat Long

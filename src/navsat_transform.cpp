@@ -140,6 +140,8 @@ NavSatTransform::NavSatTransform(const rclcpp::NodeOptions & options)
 
   to_ll_srv_ = this->create_service<robot_localization::srv::ToLL>(
     "toLL", std::bind(&NavSatTransform::toLLCallback, this, _1, _2));
+  to_ll_array_srv_ = this->create_service<robot_localization::srv::ToLLArray>(
+    "toLLArray", std::bind(&NavSatTransform::toLLArrayCallback, this, _1, _2));
   from_ll_srv_ = this->create_service<robot_localization::srv::FromLL>(
     "fromLL", std::bind(&NavSatTransform::fromLLCallback, this, _1, _2));
   from_ll_array_srv_ = this->create_service<robot_localization::srv::FromLLArray>(
@@ -401,6 +403,24 @@ bool NavSatTransform::toLLCallback(
     point, response->ll_point.latitude, response->ll_point.longitude,
     response->ll_point.altitude);
 
+  return true;
+}
+
+bool NavSatTransform::toLLArrayCallback(
+  const std::shared_ptr<robot_localization::srv::ToLLArray::Request> request,
+  std::shared_ptr<robot_localization::srv::ToLLArray::Response> response)
+{
+  if (!transform_good_) {
+    return false;
+  }
+  // tf2::Vector3 point;
+  // tf2::fromMsg(request.map_point, point);
+  for (auto it = request->map_points.begin(); it != request->map_points.end(); ++it) {
+    tf2::Vector3 point(it->x, it->y, it->z);
+    geographic_msgs::msg::GeoPoint geo_point;
+    mapToLL(point, geo_point.latitude, geo_point.longitude, geo_point.altitude);
+    response->ll_points.push_back(geo_point);
+  }
   return true;
 }
 
